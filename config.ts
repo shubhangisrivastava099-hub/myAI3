@@ -30,10 +30,10 @@ function getDateAndTime(): string {
 
 export const DATE_AND_TIME = getDateAndTime();
 
-export const AI_NAME = "DemoBot";
-export const OWNER_NAME = "Shubhangi Srivastava";
+export const AI_NAME = "Consulto";
+export const OWNER_NAME = "Shubhangi & Nikita";
 
-export const WELCOME_MESSAGE = `Helloooo! I'm ${AI_NAME}, an AI assistant/guide created by ${OWNER_NAME}.`
+export const WELCOME_MESSAGE = `Helloooo! I'm ${AI_NAME}, a personal consulting prep coach created created by 2 MBA Grads from BITSoM ${OWNER_NAME}.I help you practice guesstimates, structure cases, and build consulting-style problem-solving skills.`
 
 export const CLEAR_CHAT_TEXT = "New";
 

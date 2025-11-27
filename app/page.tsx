@@ -318,6 +318,11 @@ export default function Chat() {
                 {isClient && (
 
               <div className="max-w-3xl w-full mb-4">
+
+                <p className="text-sm text-muted-foreground mb-2">
+  Hi! I'm {AI_NAME}, your personal consulting interview prep partner.
+</p>
+
                 <p className="text-xs text-muted-foreground mb-2">
                   You can type anything in the box below, or use these shortcuts
                   to get started:

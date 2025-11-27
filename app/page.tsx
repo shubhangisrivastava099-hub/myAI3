@@ -257,7 +257,7 @@ export default function Chat() {
       className="flex h-screen items-center justify-center font-sans"
       style={{ background: "linear-gradient(to bottom, #f0f5ff, #ffffff)" }}
     >
-      <main className="w-full h-screen relative">
+        <main className="w-full h-screen relative pt-24">
         {/* 🔵 TOP HEADER BAR */}
         <div
           className="fixed top-0 left-0 right-0 z-50 py-3 shadow-md"
@@ -302,7 +302,7 @@ export default function Chat() {
         </div>
 
         {/* 🧊 Scrollable content area, with padding for header + footer */}
-        <div className="h-screen overflow-y-auto px-5 py-4 w-full pt-[88px] pb-[150px]">
+          <div className="h-screen overflow-y-auto px-5 py-4 w-full pb-[150px]">
           <div className="flex flex-col items-center justify-end min-h-full">
             {isClient && (
               <div className="max-w-3xl w-full mb-4">

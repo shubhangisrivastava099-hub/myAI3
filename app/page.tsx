@@ -20,7 +20,6 @@ import {
   AI_NAME,
   CLEAR_CHAT_TEXT,
   OWNER_NAME,
-  WELCOME_MESSAGE,
 } from "@/config";
 import Image from "next/image";
 import Link from "next/link";
@@ -161,8 +160,7 @@ export default function Chat() {
   const [isClient, setIsClient] = useState(false);
   const [durations, setDurations] = useState<Record<string, number>>({});
   const [openMode, setOpenMode] = useState<string | null>(null);
-  const welcomeMessageShownRef = useRef<boolean>(false);
-
+  
     const [resumeSummary, setResumeSummary] = useState<string | null>(null);
   const [resumeStatus, setResumeStatus] = useState<
     "idle" | "uploading" | "ready" | "error"
@@ -238,28 +236,6 @@ export default function Chat() {
       return newDurations;
     });
   };
-
-  useEffect(() => {
-    if (
-      isClient &&
-      initialMessages.length === 0 &&
-      !welcomeMessageShownRef.current
-    ) {
-      const welcomeMessage: UIMessage = {
-        id: `welcome-${Date.now()}`,
-        role: "assistant",
-        parts: [
-          {
-            type: "text",
-            text: WELCOME_MESSAGE,
-          },
-        ],
-      };
-      setMessages([welcomeMessage]);
-      saveMessagesToStorage([welcomeMessage], {});
-      welcomeMessageShownRef.current = true;
-    }
-  }, [isClient, initialMessages.length, setMessages]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

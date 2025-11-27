@@ -400,28 +400,6 @@ export default function Chat() {
           <div className="w-full px-5 pt-5 pb-1 items-center flex justify-center relative overflow-visible">
             <div className="message-fade-overlay" />
             <div className="max-w-3xl w-full">
-              
-   {/* Upload resume section */}
-   <div className="flex items-center justify-between mb-2">
-     <div className="flex items-center gap-2">
-       <Button
-         type="button"
-         variant="outline"
-         className="border-blue-500 text-blue-700 hover:bg-blue-50"
-         size="sm"
-         onClick={handleResumeButtonClick}
-       >
-         Upload resume (PDF / Word)
-       </Button>
-       <span className="text-[11px] text-muted-foreground">
-         {resumeStatus === "ready"
-           ? "Resume loaded ✅"
-           : resumeStatus === "uploading"
-           ? "Processing resume..."
-           : "Optional: helps tailor fit answers to your profile."}
-       </span>
-     </div>
-   </div>
 
    {/* hidden file input */}
    <input

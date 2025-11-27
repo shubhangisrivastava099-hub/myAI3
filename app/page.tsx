@@ -15,7 +15,7 @@ import { ChatHeader } from "@/app/parts/chat-header";
 import { ChatHeaderBlock } from "@/app/parts/chat-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UIMessage } from "ai";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, ChangeEvent } from "react";
 import {
   AI_NAME,
   CLEAR_CHAT_TEXT,
@@ -162,6 +162,51 @@ export default function Chat() {
   const [durations, setDurations] = useState<Record<string, number>>({});
   const [openMode, setOpenMode] = useState<string | null>(null);
   const welcomeMessageShownRef = useRef<boolean>(false);
+
+    const [resumeSummary, setResumeSummary] = useState<string | null>(null);
+  const [resumeStatus, setResumeStatus] = useState<
+    "idle" | "uploading" | "ready" | "error"
+  >("idle");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleResumeButtonClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleResumeChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setResumeStatus("uploading");
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload-resume", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await res.json();
+      setResumeSummary(data.summary || null);
+      setResumeStatus("ready");
+      toast.success("Resume uploaded and summarized!");
+    } catch (err) {
+      console.error(err);
+      setResumeStatus("error");
+      toast.error("Could not process resume. Please try again.");
+    } finally {
+      // allow re-upload of the same file
+      if (event.target) {
+        event.target.value = "";
+      }
+    }
+  };
 
   const stored =
     typeof window !== "undefined"
@@ -355,6 +400,38 @@ export default function Chat() {
           <div className="w-full px-5 pt-5 pb-1 items-center flex justify-center relative overflow-visible">
             <div className="message-fade-overlay" />
             <div className="max-w-3xl w-full">
+              
+   {/* Upload resume section */}
+   <div className="flex items-center justify-between mb-2">
+     <div className="flex items-center gap-2">
+       <Button
+         type="button"
+         variant="outline"
+         className="border-blue-500 text-blue-700 hover:bg-blue-50"
+         size="sm"
+         onClick={handleResumeButtonClick}
+       >
+         Upload resume (PDF / Word)
+       </Button>
+       <span className="text-[11px] text-muted-foreground">
+         {resumeStatus === "ready"
+           ? "Resume loaded ✅"
+           : resumeStatus === "uploading"
+           ? "Processing resume..."
+           : "Optional: helps tailor fit answers to your profile."}
+       </span>
+     </div>
+   </div>
+
+   {/* hidden file input */}
+   <input
+     ref={fileInputRef}
+     type="file"
+     accept=".pdf,.doc,.docx"
+     className="hidden"
+     onChange={handleResumeChange}
+   />
+              
               <form id="chat-form" onSubmit={form.handleSubmit(onSubmit)}>
                 <FieldGroup>
                   <Controller

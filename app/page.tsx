@@ -420,45 +420,46 @@ export default function Chat() {
                         >
                           Message
                         </FieldLabel>
-                        <div className="relative h-13">
-                          <Input
-                            {...field}
-                            id="chat-form-message"
-                            className="h-12 pr-10 pl-4 bg-card rounded-[16px]"
-                            placeholder="Type your message here..."
-                            disabled={status === "streaming"}
-                            aria-invalid={fieldState.invalid}
-                            autoComplete="off"
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter" && !e.shiftKey) {
-                                e.preventDefault();
-                                form.handleSubmit(onSubmit)();
-                              }
-                            }}
-                          />
-                          {(status === "ready" || status === "error") && (
-                            <Button
-                              className="absolute right-3 top-3 rounded-full"
-                              type="submit"
-                              disabled={!field.value.trim()}
-                              size="icon"
-                            >
-                              <ArrowUp className="size-4" />
-                            </Button>
-                          )}
-                          {(status === "streaming" ||
-                            status === "submitted") && (
-                            <Button
-                              className="absolute right-2 top-2 rounded-full"
-                              size="icon"
-                              onClick={() => {
-                                stop();
-                              }}
-                            >
-                              <Square className="size-4" />
-                            </Button>
-                          )}
-                        </div>
+                        <div className="relative h-12">
+  <Input
+    {...field}
+    id="chat-form-message"
+    className="h-12 pr-12 pl-4 bg-card rounded-[16px]"
+    placeholder="Type your message here..."
+    disabled={status === "streaming"}
+    aria-invalid={fieldState.invalid}
+    autoComplete="off"
+    onKeyDown={(e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        form.handleSubmit(onSubmit)();
+      }
+    }}
+  />
+
+  {(status === "ready" || status === "error") && (
+    <Button
+      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full"
+      type="submit"
+      disabled={!field.value.trim()}
+      size="icon"
+    >
+      <ArrowUp className="size-4" />
+    </Button>
+  )}
+
+  {(status === "streaming" || status === "submitted") && (
+    <Button
+      className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full"
+      size="icon"
+      onClick={() => {
+        stop();
+      }}
+    >
+      <Square className="size-4" />
+    </Button>
+  )}
+</div>
                       </Field>
                     )}
                   />

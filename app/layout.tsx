@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MyAI3",
+  title: "Consulto - Your Consulting Prep Partner",
   description: "MyAI3",
 };
 

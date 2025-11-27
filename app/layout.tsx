@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Consulto - Your Consulting Prep Partner",
-  description: "MyAI3",
+  description: "Consulto is an AI-powered assistant to practice guesstimates, case interviews, and company prep for consulting placements",
 };
 
 export default function RootLayout({

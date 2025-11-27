@@ -11,16 +11,11 @@ import { Input } from "@/components/ui/input";
 import { useChat } from "@ai-sdk/react";
 import { ArrowUp, Loader2, Plus, Square } from "lucide-react";
 import { MessageWall } from "@/components/messages/message-wall";
-import { ChatHeader } from "@/app/parts/chat-header";
-import { ChatHeaderBlock } from "@/app/parts/chat-header";
+import { ChatHeader, ChatHeaderBlock } from "@/app/parts/chat-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UIMessage } from "ai";
 import { useEffect, useState, useRef, ChangeEvent } from "react";
-import {
-  AI_NAME,
-  CLEAR_CHAT_TEXT,
-  OWNER_NAME,
-} from "@/config";
+import { AI_NAME, CLEAR_CHAT_TEXT, OWNER_NAME } from "@/config";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -45,13 +40,11 @@ const MODE_CATEGORIES = [
         prompt:
           "Let's practice a guesstimate. Give me a fresh interview-style guesstimate question.",
       },
-     
       {
-  label: "Industry-specific guesstimate",
-  prompt:
-    "Let's do an industry-specific guesstimate. First, ask me which industry I want to practice (for example: FMCG, telecom, e-commerce, banking, healthcare, aviation, etc.). If I say I have no preference, or I say 'anything is fine', then you should pick a reasonable industry yourself and give me a consulting-style guesstimate question in that industry. Run it like a real interview.",
-},
-
+        label: "Industry-specific guesstimate",
+        prompt:
+          "Let's do an industry-specific guesstimate. First, ask me which industry I want to practice (for example: FMCG, telecom, e-commerce, banking, healthcare, aviation, etc.). If I say I have no preference, or I say 'anything is fine', then you should pick a reasonable industry yourself and give me a consulting-style guesstimate question in that industry. Run it like a real interview.",
+      },
       {
         label: "Help me structure a guesstimate",
         prompt:
@@ -162,8 +155,8 @@ export default function Chat() {
   const [isClient, setIsClient] = useState(false);
   const [durations, setDurations] = useState<Record<string, number>>({});
   const [openMode, setOpenMode] = useState<string | null>(null);
-  
-    const [resumeSummary, setResumeSummary] = useState<string | null>(null);
+
+  const [resumeSummary, setResumeSummary] = useState<string | null>(null);
   const [resumeStatus, setResumeStatus] = useState<
     "idle" | "uploading" | "ready" | "error"
   >("idle");
@@ -201,7 +194,6 @@ export default function Chat() {
       setResumeStatus("error");
       toast.error("Could not process resume. Please try again.");
     } finally {
-      // allow re-upload of the same file
       if (event.target) {
         event.target.value = "";
       }
@@ -253,7 +245,7 @@ export default function Chat() {
 
   function clearChat() {
     const newMessages: UIMessage[] = [];
-    const newDurations = {};
+    const newDurations: Record<string, number> = {};
     setMessages(newMessages);
     setDurations(newDurations);
     saveMessagesToStorage(newMessages, newDurations);
@@ -261,50 +253,69 @@ export default function Chat() {
   }
 
   return (
-    <div className="flex h-screen items-center justify-center font-sans dark:bg-black">
-      <main className="w-full dark:bg-black h-screen relative">
-        <div className="fixed top-0 left-0 right-0 z-50 bg-linear-to-b from-background via-background/50 to-transparent dark:bg-black overflow-visible pb-16">
-          <div className="relative overflow-visible">
-            <ChatHeader>
-              <ChatHeaderBlock />
-              <ChatHeaderBlock className="justify-center items-center">
-                <Avatar className="size-8 ring-1 ring-primary">
-                  <AvatarImage src="/consulto-logo-1.png" />
-                  <AvatarFallback>
-                    <Image src="/consulto-logo-1.png" alt="Logo" width={12} height={12} />
-                  </AvatarFallback>
-                </Avatar>
-                <p className="tracking-tight text-lg font-semibold" style={{ color: "#0A2A84" }}>Consulto</p>
-              </ChatHeaderBlock>
-              <ChatHeaderBlock className="justify-end">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="cursor-pointer"
-                  onClick={clearChat}
-                >
-                  <Plus className="size-4" />
-                  {CLEAR_CHAT_TEXT}
-                </Button>
-              </ChatHeaderBlock>
-            </ChatHeader>
-          </div>
+    <div
+      className="flex h-screen items-center justify-center font-sans"
+      style={{ background: "linear-gradient(to bottom, #f0f5ff, #ffffff)" }}
+    >
+      <main className="w-full h-screen relative">
+        {/* 🔵 TOP HEADER BAR */}
+        <div
+          className="fixed top-0 left-0 right-0 z-50 py-3 shadow-md"
+          style={{ backgroundColor: "#0A2A84" }}
+        >
+          <ChatHeader>
+            {/* Left block (for spacing) */}
+            <ChatHeaderBlock />
+
+            {/* Center block — Logo + Title */}
+            <ChatHeaderBlock className="justify-center items-center gap-2">
+              <Avatar className="size-9 bg-white ring-1 ring-white">
+                <AvatarImage src="/consulto-logo-1.png" />
+                <AvatarFallback>
+                  <Image
+                    src="/consulto-logo-1.png"
+                    alt="Logo"
+                    width={24}
+                    height={24}
+                  />
+                </AvatarFallback>
+              </Avatar>
+
+              <p className="tracking-tight text-lg font-semibold text-white">
+                Consulto — Your Placement Prep Partner
+              </p>
+            </ChatHeaderBlock>
+
+            {/* Right block — Clear Chat */}
+            <ChatHeaderBlock className="justify-end">
+              <Button
+                variant="outline"
+                size="sm"
+                className="cursor-pointer text-white border-white hover:bg-white hover:text-[#0A2A84]"
+                onClick={clearChat}
+              >
+                <Plus className="size-4" />
+                {CLEAR_CHAT_TEXT}
+              </Button>
+            </ChatHeaderBlock>
+          </ChatHeader>
         </div>
 
+        {/* 🧊 Scrollable content area, with padding for header + footer */}
         <div className="h-screen overflow-y-auto px-5 py-4 w-full pt-[88px] pb-[150px]">
           <div className="flex flex-col items-center justify-end min-h-full">
-                {isClient && (
-
+            {isClient && (
               <div className="max-w-3xl w-full mb-4">
-
                 <p className="text-sm text-muted-foreground mb-2">
-  Hi! I'm {AI_NAME}, your personal consulting interview prep partner.
-</p>
+                  Hi! I'm {AI_NAME}, your personal consulting interview prep
+                  partner.
+                </p>
 
                 <p className="text-xs text-muted-foreground mb-2">
                   You can type anything in the box below, or use these shortcuts
                   to get started:
                 </p>
+
                 <div className="space-y-3">
                   {MODE_CATEGORIES.map((mode) => (
                     <div
@@ -379,20 +390,23 @@ export default function Chat() {
           </div>
         </div>
 
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-linear-to-t from-background via-background/50 to-transparent dark:bg-black overflow-visible pt-13">
+        {/* 🔵 BOTTOM INPUT BAR + FOOTER */}
+        <div
+          className="fixed bottom-0 left-0 right-0 z-50 overflow-visible pt-3"
+          style={{ backgroundColor: "#0A2A84" }}
+        >
           <div className="w-full px-5 pt-5 pb-1 items-center flex justify-center relative overflow-visible">
             <div className="message-fade-overlay" />
             <div className="max-w-3xl w-full">
+              {/* hidden file input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.doc,.docx"
+                className="hidden"
+                onChange={handleResumeChange}
+              />
 
-   {/* hidden file input */}
-   <input
-     ref={fileInputRef}
-     type="file"
-     accept=".pdf,.doc,.docx"
-     className="hidden"
-     onChange={handleResumeChange}
-   />
-              
               <form id="chat-form" onSubmit={form.handleSubmit(onSubmit)}>
                 <FieldGroup>
                   <Controller
@@ -422,7 +436,7 @@ export default function Chat() {
                               }
                             }}
                           />
-                          {(status == "ready" || status == "error") && (
+                          {(status === "ready" || status === "error") && (
                             <Button
                               className="absolute right-3 top-3 rounded-full"
                               type="submit"
@@ -432,7 +446,8 @@ export default function Chat() {
                               <ArrowUp className="size-4" />
                             </Button>
                           )}
-                          {(status == "streaming" || status == "submitted") && (
+                          {(status === "streaming" ||
+                            status === "submitted") && (
                             <Button
                               className="absolute right-2 top-2 rounded-full"
                               size="icon"
@@ -451,7 +466,7 @@ export default function Chat() {
               </form>
             </div>
           </div>
-          <div className="w-full px-5 py-3 items-center flex justify-center text-xs text-muted-foreground">
+          <div className="w-full px-5 py-3 items-center flex justify-center text-xs text-white">
             © {new Date().getFullYear()} {OWNER_NAME}
             &nbsp;
             <Link href="/terms" className="underline">

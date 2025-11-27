@@ -253,15 +253,15 @@ export default function Chat() {
   }
 
   return (
-    <div
-      className="flex h-screen items-center justify-center font-sans"
-      style={{ background: "linear-gradient(to bottom, #f0f5ff, #ffffff)" }}
-    >
+      <div
+  className="flex h-screen items-center justify-center font-sans"
+  style={{ backgroundColor: "#ffffff" }}   // pure white background
+>
         <main className="w-full h-screen relative pt-24">
         {/* 🔵 TOP HEADER BAR */}
         <div
           className="fixed top-0 left-0 right-0 z-50 py-3 shadow-md"
-          style={{ backgroundColor: "#0A2A84" }}
+          style={{ backgroundColor: "#1A3DA1" }}
         >
           <ChatHeader>
             {/* Left block (for spacing) */}
@@ -393,7 +393,7 @@ export default function Chat() {
         {/* 🔵 BOTTOM INPUT BAR + FOOTER */}
         <div
           className="fixed bottom-0 left-0 right-0 z-50 overflow-visible pt-3"
-          style={{ backgroundColor: "#0A2A84" }}
+          style={{ backgroundColor: "#1A3DA1" }}
         >
           <div className="w-full px-5 pt-5 pb-1 items-center flex justify-center relative overflow-visible">
             <div className="message-fade-overlay" />
@@ -424,7 +424,7 @@ export default function Chat() {
                           <Input
                             {...field}
                             id="chat-form-message"
-                            className="h-15 pr-15 pl-5 bg-card rounded-[20px]"
+                            className="h-12 pr-10 pl-4 bg-card rounded-[16px]"
                             placeholder="Type your message here..."
                             disabled={status === "streaming"}
                             aria-invalid={fieldState.invalid}

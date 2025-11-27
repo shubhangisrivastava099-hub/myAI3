@@ -274,7 +274,7 @@ export default function Chat() {
                     <Image src="/consulto-logo-1.png" alt="Logo" width={12} height={12} />
                   </AvatarFallback>
                 </Avatar>
-                <p className="tracking-tight">Chat with {AI_NAME}</p>
+                <p className="tracking-tight text-lg font-semibold" style={{ color: "#0A2A84" }}>Consulto</p>
               </ChatHeaderBlock>
               <ChatHeaderBlock className="justify-end">
                 <Button

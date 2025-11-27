@@ -282,7 +282,7 @@ export default function Chat() {
               </Avatar>
 
               <p className="tracking-tight text-lg font-semibold text-white">
-                Consulto — Your Placement Prep Partner
+                Consulto
               </p>
             </ChatHeaderBlock>
 

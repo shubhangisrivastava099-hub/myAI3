@@ -288,15 +288,15 @@ export default function Chat() {
 
             {/* Right block — Clear Chat */}
             <ChatHeaderBlock className="justify-end">
-              <Button
-                variant="outline"
-                size="sm"
-                className="cursor-pointer text-white border-white hover:bg-white hover:text-[#0A2A84]"
-                onClick={clearChat}
-              >
-                <Plus className="size-4" />
-                {CLEAR_CHAT_TEXT}
-              </Button>
+<Button
+  variant="outline"
+  size="sm"
+  className="cursor-pointer bg-white text-[#0A2A84] border-white hover:bg-[#0A2A84] hover:text-white"
+  onClick={clearChat}
+>
+  <Plus className="size-4 mr-1" />
+  {CLEAR_CHAT_TEXT}
+</Button>     
             </ChatHeaderBlock>
           </ChatHeader>
         </div>

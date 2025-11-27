@@ -269,9 +269,9 @@ export default function Chat() {
               <ChatHeaderBlock />
               <ChatHeaderBlock className="justify-center items-center">
                 <Avatar className="size-8 ring-1 ring-primary">
-                  <AvatarImage src="/consulto-logo.png" />
+                  <AvatarImage src="/consulto-logo-1.png" />
                   <AvatarFallback>
-                    <Image src="/consulto-logo.png" alt="Logo" width={36} height={36} />
+                    <Image src="/consulto-logo-1.png" alt="Logo" width={36} height={36} />
                   </AvatarFallback>
                 </Avatar>
                 <p className="tracking-tight">Chat with {AI_NAME}</p>

@@ -270,7 +270,8 @@ export default function Chat() {
 
         <div className="h-screen overflow-y-auto px-5 py-4 w-full pt-[88px] pb-[150px]">
           <div className="flex flex-col items-center justify-end min-h-full">
-            {isClient && messages.length <= 1 && (
+                {isClient && (
+
               <div className="max-w-3xl w-full mb-4">
                 <p className="text-xs text-muted-foreground mb-2">
                   You can type anything in the box below, or use these shortcuts

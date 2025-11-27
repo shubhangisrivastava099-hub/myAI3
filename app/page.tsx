@@ -6,21 +6,22 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useChat } from "@ai-sdk/react";
-import { ArrowUp, Eraser, Loader2, Plus, PlusIcon, Square } from "lucide-react";
+import { ArrowUp, Loader2, Plus, Square } from "lucide-react";
 import { MessageWall } from "@/components/messages/message-wall";
 import { ChatHeader } from "@/app/parts/chat-header";
 import { ChatHeaderBlock } from "@/app/parts/chat-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { UIMessage } from "ai";
 import { useEffect, useState, useRef } from "react";
-import { AI_NAME, CLEAR_CHAT_TEXT, OWNER_NAME, WELCOME_MESSAGE } from "@/config";
+import {
+  AI_NAME,
+  CLEAR_CHAT_TEXT,
+  OWNER_NAME,
+  WELCOME_MESSAGE,
+} from "@/config";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -31,15 +32,103 @@ const formSchema = z.object({
     .max(2000, "Message must be at most 2000 characters."),
 });
 
-const STORAGE_KEY = 'chat-messages';
+const STORAGE_KEY = "chat-messages";
+
+// 🔵 Mode categories for dropdowns
+const MODE_CATEGORIES = [
+  {
+    id: "guesstimates",
+    title: "Guesstimates",
+    description: "Practice interview-style market sizing & estimation.",
+    options: [
+      {
+        label: "New generic guesstimate",
+        prompt:
+          "Let's practice a guesstimate. Give me a fresh interview-style guesstimate question.",
+      },
+      {
+        label: "Industry-specific (FMCG)",
+        prompt:
+          "Give me a consulting-style guesstimate for the FMCG sector in India.",
+      },
+      {
+        label: "Help me structure a guesstimate",
+        prompt:
+          "I will share a guesstimate question. Help me build a clear, MECE structure for it.",
+      },
+      {
+        label: "Review my guesstimate attempt",
+        prompt:
+          "I will paste my guesstimate solution. Please review it and give feedback plus an alternative approach.",
+      },
+    ],
+  },
+  {
+    id: "case-prep",
+    title: "Case Prep",
+    description: "Simulate cases like a real consulting interviewer.",
+    options: [
+      {
+        label: "Profitability case",
+        prompt:
+          "Let's do a profitability case. Act like an interviewer and give only limited information at each step.",
+      },
+      {
+        label: "Market entry case",
+        prompt:
+          "Give me a market entry case in an India context and run it like a real case interview.",
+      },
+      {
+        label: "Revise case frameworks",
+        prompt:
+          "Help me revise key case frameworks: profitability, market entry, growth, and capacity/operations.",
+      },
+      {
+        label: "Review my case structure",
+        prompt:
+          "I will paste my case structure. Please review it and suggest improvements like a consulting interviewer.",
+      },
+    ],
+  },
+  {
+    id: "company-prep",
+    title: "Company Prep",
+    description: "Research firms & structure ‘Why this firm / why you’.",
+    options: [
+      {
+        label: "Full company research brief",
+        prompt:
+          "Help me prepare for a company. Ask me the company name, role, and my background, then give a structured research brief (about the firm, business lines, values, latest news) and answer skeletons.",
+      },
+      {
+        label: "Why this firm – structure",
+        prompt:
+          "Help me structure a strong ‘Why this firm’ answer using company information and my profile.",
+      },
+      {
+        label: "Review my ‘Why this firm’ answer",
+        prompt:
+          "I will paste my current answer for ‘Why this firm’. Please review it, point out gaps, and suggest a sharper version.",
+      },
+      {
+        label: "Questions to ask the interviewer",
+        prompt:
+          "Based on the company and role I share, suggest 5–7 smart, non-generic questions I can ask the interviewer.",
+      },
+    ],
+  },
+];
 
 type StorageData = {
   messages: UIMessage[];
   durations: Record<string, number>;
 };
 
-const loadMessagesFromStorage = (): { messages: UIMessage[]; durations: Record<string, number> } => {
-  if (typeof window === 'undefined') return { messages: [], durations: {} };
+const loadMessagesFromStorage = (): {
+  messages: UIMessage[];
+  durations: Record<string, number>;
+} => {
+  if (typeof window === "undefined") return { messages: [], durations: {} };
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return { messages: [], durations: {} };
@@ -50,27 +139,34 @@ const loadMessagesFromStorage = (): { messages: UIMessage[]; durations: Record<s
       durations: parsed.durations || {},
     };
   } catch (error) {
-    console.error('Failed to load messages from localStorage:', error);
+    console.error("Failed to load messages from localStorage:", error);
     return { messages: [], durations: {} };
   }
 };
 
-const saveMessagesToStorage = (messages: UIMessage[], durations: Record<string, number>) => {
-  if (typeof window === 'undefined') return;
+const saveMessagesToStorage = (
+  messages: UIMessage[],
+  durations: Record<string, number>
+) => {
+  if (typeof window === "undefined") return;
   try {
     const data: StorageData = { messages, durations };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch (error) {
-    console.error('Failed to save messages to localStorage:', error);
+    console.error("Failed to save messages to localStorage:", error);
   }
 };
 
 export default function Chat() {
   const [isClient, setIsClient] = useState(false);
   const [durations, setDurations] = useState<Record<string, number>>({});
+  const [openMode, setOpenMode] = useState<string | null>(null);
   const welcomeMessageShownRef = useRef<boolean>(false);
 
-  const stored = typeof window !== 'undefined' ? loadMessagesFromStorage() : { messages: [], durations: {} };
+  const stored =
+    typeof window !== "undefined"
+      ? loadMessagesFromStorage()
+      : { messages: [], durations: {} };
   const [initialMessages] = useState<UIMessage[]>(stored.messages);
 
   const { messages, sendMessage, status, stop, setMessages } = useChat({
@@ -81,6 +177,7 @@ export default function Chat() {
     setIsClient(true);
     setDurations(stored.durations);
     setMessages(stored.messages);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -98,7 +195,11 @@ export default function Chat() {
   };
 
   useEffect(() => {
-    if (isClient && initialMessages.length === 0 && !welcomeMessageShownRef.current) {
+    if (
+      isClient &&
+      initialMessages.length === 0 &&
+      !welcomeMessageShownRef.current
+    ) {
       const welcomeMessage: UIMessage = {
         id: `welcome-${Date.now()}`,
         role: "assistant",
@@ -144,9 +245,7 @@ export default function Chat() {
             <ChatHeader>
               <ChatHeaderBlock />
               <ChatHeaderBlock className="justify-center items-center">
-                <Avatar
-                  className="size-8 ring-1 ring-primary"
-                >
+                <Avatar className="size-8 ring-1 ring-primary">
                   <AvatarImage src="/logo.png" />
                   <AvatarFallback>
                     <Image src="/logo.png" alt="Logo" width={36} height={36} />
@@ -168,11 +267,75 @@ export default function Chat() {
             </ChatHeader>
           </div>
         </div>
+
         <div className="h-screen overflow-y-auto px-5 py-4 w-full pt-[88px] pb-[150px]">
           <div className="flex flex-col items-center justify-end min-h-full">
+            {isClient && messages.length <= 1 && (
+              <div className="max-w-3xl w-full mb-4">
+                <p className="text-xs text-muted-foreground mb-2">
+                  You can type anything in the box below, or use these shortcuts
+                  to get started:
+                </p>
+                <div className="space-y-3">
+                  {MODE_CATEGORIES.map((mode) => (
+                    <div
+                      key={mode.id}
+                      className="rounded-xl border border-blue-300 bg-blue-50 shadow-sm"
+                    >
+                      <button
+                        type="button"
+                        className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left"
+                        onClick={() =>
+                          setOpenMode((prev) =>
+                            prev === mode.id ? null : mode.id
+                          )
+                        }
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-sm font-semibold text-blue-900">
+                            {mode.title}
+                          </span>
+                          <span className="text-[11px] text-blue-800">
+                            {mode.description}
+                          </span>
+                        </div>
+                        <span className="text-xs text-blue-800">
+                          {openMode === mode.id ? "▲" : "▼"}
+                        </span>
+                      </button>
+
+                      {openMode === mode.id && (
+                        <div className="flex flex-wrap gap-2 border-t border-blue-200 px-3 pb-3 pt-2">
+                          {mode.options.map((opt) => (
+                            <Button
+                              key={opt.label}
+                              type="button"
+                              variant="outline"
+                              className="rounded-full border-blue-500 text-xs text-blue-700 hover:bg-blue-100"
+                              onClick={() => {
+                                form.setValue("message", opt.prompt);
+                                form.handleSubmit(onSubmit)();
+                              }}
+                            >
+                              {opt.label}
+                            </Button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {isClient ? (
               <>
-                <MessageWall messages={messages} status={status} durations={durations} onDurationChange={handleDurationChange} />
+                <MessageWall
+                  messages={messages}
+                  status={status}
+                  durations={durations}
+                  onDurationChange={handleDurationChange}
+                />
                 {status === "submitted" && (
                   <div className="flex justify-start max-w-3xl w-full">
                     <Loader2 className="size-4 animate-spin text-muted-foreground" />
@@ -186,6 +349,7 @@ export default function Chat() {
             )}
           </div>
         </div>
+
         <div className="fixed bottom-0 left-0 right-0 z-50 bg-linear-to-t from-background via-background/50 to-transparent dark:bg-black overflow-visible pt-13">
           <div className="w-full px-5 pt-5 pb-1 items-center flex justify-center relative overflow-visible">
             <div className="message-fade-overlay" />
@@ -197,7 +361,10 @@ export default function Chat() {
                     control={form.control}
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel htmlFor="chat-form-message" className="sr-only">
+                        <FieldLabel
+                          htmlFor="chat-form-message"
+                          className="sr-only"
+                        >
                           Message
                         </FieldLabel>
                         <div className="relative h-13">
@@ -246,10 +413,18 @@ export default function Chat() {
             </div>
           </div>
           <div className="w-full px-5 py-3 items-center flex justify-center text-xs text-muted-foreground">
-            © {new Date().getFullYear()} {OWNER_NAME}&nbsp;<Link href="/terms" className="underline">Terms of Use</Link>&nbsp;Powered by&nbsp;<Link href="https://ringel.ai/" className="underline">Ringel.AI</Link>
+            © {new Date().getFullYear()} {OWNER_NAME}
+            &nbsp;
+            <Link href="/terms" className="underline">
+              Terms of Use
+            </Link>
+            &nbsp;Powered by&nbsp;
+            <Link href="https://ringel.ai/" className="underline">
+              Ringel.AI
+            </Link>
           </div>
         </div>
       </main>
-    </div >
+    </div>
   );
 }

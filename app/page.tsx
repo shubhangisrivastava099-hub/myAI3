@@ -45,11 +45,13 @@ const MODE_CATEGORIES = [
         prompt:
           "Let's practice a guesstimate. Give me a fresh interview-style guesstimate question.",
       },
+     
       {
-        label: "Industry-specific (FMCG)",
-        prompt:
-          "Give me a consulting-style guesstimate for the FMCG sector in India.",
-      },
+  label: "Industry-specific guesstimate",
+  prompt:
+    "Let's do an industry-specific guesstimate. First, ask me which industry I want to practice (for example: FMCG, telecom, e-commerce, banking, healthcare, aviation, etc.). If I say I have no preference, or I say 'anything is fine', then you should pick a reasonable industry yourself and give me a consulting-style guesstimate question in that industry. Run it like a real interview.",
+},
+
       {
         label: "Help me structure a guesstimate",
         prompt:
